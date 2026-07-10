@@ -20,3 +20,6 @@ frontend/package-lock.json
 frontend/.vercel/
 frontend/vite.config.js.timestamp-*
 dist/
+
+.vercel
+.env*
