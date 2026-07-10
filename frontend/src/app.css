@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-screen bg-ink text-mist font-body antialiased;
+}
+
+::selection {
+  @apply bg-glow/20 text-white;
+}
+
+.panel {
+  @apply border border-grid/80 bg-steel/80 shadow-panel backdrop-blur;
+}
+
+.eyebrow {
+  @apply font-mono text-[0.7rem] uppercase tracking-[0.32em] text-glow/80;
+}
+
+.table-shell {
+  @apply overflow-hidden rounded-2xl border border-grid/70 bg-black/20;
+}
+

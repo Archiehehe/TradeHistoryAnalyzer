@@ -1,0 +1,7 @@
+Trade Date,Symbol,Security Name,Action,Shares,Price,Net Amount,Fees,Currency
+2024-01-05,NVDA,NVIDIA Corporation,Buy,10,50,-500,1,USD
+2024-02-14,NVDA,NVIDIA Corporation,Sell,5,70,350,1,USD
+2024-03-11,SPY,SPDR S&P 500 ETF Trust,Dividend,,,15,,USD
+2024-03-20,,Account service fee,Fee,,,-10,,USD
+,,,,,,,,
+

@@ -1,0 +1,2 @@
+"""TradeHistoryAnalyzer backend package."""
+
