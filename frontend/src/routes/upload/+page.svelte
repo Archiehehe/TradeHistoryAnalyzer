@@ -41,13 +41,13 @@
       <UploadDropzone
         bind:files={transactionFiles}
         label="Transaction history files"
-        description="Required. Multiple broker CSV exports are supported, along with transaction PDFs that contain extractable tables."
+        description="Required. Multiple broker CSV or Excel exports are supported, along with transaction PDFs that contain extractable tables."
       />
       <UploadDropzone
         bind:files={portfolioFiles}
         label="Current portfolio context"
-        description="Optional. A Seeking Alpha portfolio CSV improves current holding status, conviction context, and open-versus-closed position checks."
-        accept=".csv,.tsv,.txt"
+        description="Optional. A Seeking Alpha portfolio CSV or Excel export improves current holding status, conviction context, and open-versus-closed position checks."
+        accept=".csv,.tsv,.txt,.xlsx,.xlsm"
       />
       <label class="block">
         <span class="eyebrow">Notes</span>
@@ -71,4 +71,3 @@
     </ul>
   </SectionCard>
 </div>
-

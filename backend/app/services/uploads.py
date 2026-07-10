@@ -57,7 +57,7 @@ async def process_transaction_upload(files: list[UploadFile], notes: str | None,
             extension = _file_extension(filename)
             if extension == "pdf":
                 parsed = parse_transaction_pdf_bytes(filename, file_bytes, ai_router)
-            elif extension in {"csv", "tsv", "txt"}:
+            elif extension in {"csv", "tsv", "txt", "xlsx", "xlsm"}:
                 parsed = parse_transaction_csv_bytes(filename, file_bytes, ai_router)
             else:
                 raise ValueError(f"Unsupported transaction file type: {extension or 'unknown'}")

@@ -59,6 +59,13 @@ class Settings(BaseSettings):
             return path
         return PROJECT_ROOT / path
 
+    @field_validator("r2_public_base_url", mode="before")
+    @classmethod
+    def empty_r2_public_base_url_to_none(cls, value: str | None) -> str | None:
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
+
     @computed_field
     @property
     def database_dsn(self) -> str | None:

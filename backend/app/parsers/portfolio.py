@@ -1,23 +1,12 @@
-from io import BytesIO
-
 import pandas as pd
 
 from app.parsers.column_mapping import PORTFOLIO_ALIASES, detect_column_mapping
-from app.parsers.common import normalize_ticker, parse_numeric_value
+from app.parsers.common import normalize_ticker, parse_numeric_value, read_tabular_dataframe
 from app.schemas.domain import ParseIssue, ParsedPortfolioFile, PortfolioPositionRecord
 
 
 def parse_portfolio_csv_bytes(filename: str, file_bytes: bytes) -> ParsedPortfolioFile:
-    last_error: Exception | None = None
-    dataframe = None
-    for encoding in ("utf-8-sig", "utf-8", "latin-1"):
-        try:
-            dataframe = pd.read_csv(BytesIO(file_bytes), encoding=encoding, sep=None, engine="python")
-            break
-        except Exception as exc:  # pragma: no cover - fallback path.
-            last_error = exc
-    if dataframe is None:
-        raise ValueError(f"Unable to read uploaded portfolio file: {last_error}") from last_error
+    dataframe = read_tabular_dataframe(filename, file_bytes)
     dataframe = dataframe.fillna(value=pd.NA)
     mapping = detect_column_mapping(dataframe.columns, PORTFOLIO_ALIASES)
 

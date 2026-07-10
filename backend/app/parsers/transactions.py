@@ -1,4 +1,3 @@
-from io import BytesIO, StringIO
 from typing import Any
 
 import pandas as pd
@@ -6,18 +5,8 @@ import pandas as pd
 from app.ai.router import AIRouter
 from app.ai.schemas import TransactionClassificationInput
 from app.parsers.column_mapping import FIELD_ALIASES, detect_column_mapping
-from app.parsers.common import is_meaningful_payload, normalize_action, normalize_currency, normalize_ticker, parse_date_value, parse_numeric_value
+from app.parsers.common import is_meaningful_payload, normalize_action, normalize_currency, normalize_ticker, parse_date_value, parse_numeric_value, read_tabular_dataframe
 from app.schemas.domain import NormalizedTransactionRecord, ParseIssue, ParsedTransactionFile
-
-
-def read_delimited_table(file_bytes: bytes) -> pd.DataFrame:
-    last_error: Exception | None = None
-    for encoding in ("utf-8-sig", "utf-8", "latin-1"):
-        try:
-            return pd.read_csv(BytesIO(file_bytes), encoding=encoding, sep=None, engine="python")
-        except Exception as exc:  # pragma: no cover - exercised through fallback cases.
-            last_error = exc
-    raise ValueError(f"Unable to read uploaded CSV data: {last_error}") from last_error
 
 
 def normalize_transaction_row(
@@ -189,6 +178,11 @@ def parse_transaction_dataframe(
     )
 
 
+def parse_transaction_tabular_bytes(filename: str, file_bytes: bytes, ai_router: AIRouter | None = None) -> ParsedTransactionFile:
+    dataframe = read_tabular_dataframe(filename, file_bytes)
+    file_type = filename.rsplit(".", 1)[-1].lower() if "." in filename else "csv"
+    return parse_transaction_dataframe(dataframe, filename, file_type, ai_router)
+
+
 def parse_transaction_csv_bytes(filename: str, file_bytes: bytes, ai_router: AIRouter | None = None) -> ParsedTransactionFile:
-    dataframe = read_delimited_table(file_bytes)
-    return parse_transaction_dataframe(dataframe, filename, "csv", ai_router)
+    return parse_transaction_tabular_bytes(filename, file_bytes, ai_router)

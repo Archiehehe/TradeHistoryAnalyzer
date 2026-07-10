@@ -1,7 +1,7 @@
 <script lang="ts">
   export let label: string;
   export let description: string;
-  export let accept = '.csv,.pdf';
+  export let accept = '.csv,.tsv,.txt,.xlsx,.xlsm,.pdf';
   export let multiple = true;
   export let files: File[] = [];
 
@@ -67,7 +67,7 @@
         {/each}
       </ul>
     {:else}
-      <p class="text-sm text-mist/55">Drop files here or use the selector. CSV and PDF transaction history are supported. Portfolio context expects CSV.</p>
+      <p class="text-sm text-mist/55">Drop files here or use the selector. CSV, Excel, and PDF transaction history are supported. Portfolio context accepts CSV or Excel.</p>
     {/if}
   </div>
 </div>

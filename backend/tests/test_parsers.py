@@ -1,4 +1,7 @@
+from io import BytesIO
 from pathlib import Path
+
+import pandas as pd
 
 from app.parsers.column_mapping import detect_column_mapping
 from app.parsers.common import normalize_action, parse_date_value
@@ -7,6 +10,13 @@ from app.parsers.transactions import parse_transaction_csv_bytes
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def _csv_fixture_to_excel_bytes(name: str) -> bytes:
+    dataframe = pd.read_csv(FIXTURES / name)
+    buffer = BytesIO()
+    dataframe.to_excel(buffer, index=False, engine="openpyxl")
+    return buffer.getvalue()
 
 
 def test_column_detection_matches_common_variants() -> None:
@@ -45,3 +55,16 @@ def test_seeking_alpha_portfolio_parser_reads_core_fields() -> None:
     assert len(parsed.positions) == 2
     assert parsed.positions[0].ticker == "NVDA"
     assert parsed.positions[0].portfolio_weight == 20
+
+
+def test_excel_workbooks_are_supported_for_transactions_and_portfolio() -> None:
+    transaction_payload = _csv_fixture_to_excel_bytes("sample_transactions.csv")
+    transaction_parsed = parse_transaction_csv_bytes("sample_transactions.xlsx", transaction_payload)
+
+    portfolio_payload = _csv_fixture_to_excel_bytes("sample_portfolio.csv")
+    portfolio_parsed = parse_portfolio_csv_bytes("sample_portfolio.xlsx", portfolio_payload)
+
+    assert len(transaction_parsed.transactions) == 4
+    assert transaction_parsed.file_type == "xlsx"
+    assert len(portfolio_parsed.positions) == 2
+    assert portfolio_parsed.positions[0].ticker == "NVDA"

@@ -1,7 +1,10 @@
 from datetime import date, timedelta
 import math
+from io import BytesIO
+from pathlib import Path
 import re
 
+import pandas as pd
 from dateutil import parser as date_parser
 
 
@@ -107,3 +110,20 @@ def normalize_action(action_raw: object, description: object, quantity: float | 
 def is_meaningful_payload(*values: object) -> bool:
     return any(value not in {None, "", "nan", "NaN"} for value in values)
 
+
+def read_tabular_dataframe(filename: str, file_bytes: bytes) -> pd.DataFrame:
+    extension = Path(filename).suffix.lower()
+    if extension in {".xlsx", ".xlsm"}:
+        try:
+            return pd.read_excel(BytesIO(file_bytes), engine="openpyxl")
+        except Exception as exc:  # pragma: no cover - surfaced through upload errors.
+            raise ValueError(f"Unable to read uploaded Excel data: {exc}") from exc
+
+    last_error: Exception | None = None
+    for encoding in ("utf-8-sig", "utf-8", "latin-1"):
+        try:
+            return pd.read_csv(BytesIO(file_bytes), encoding=encoding, sep=None, engine="python")
+        except Exception as exc:  # pragma: no cover - exercised through fallback cases.
+            last_error = exc
+
+    raise ValueError(f"Unable to read uploaded CSV data: {last_error}") from last_error
