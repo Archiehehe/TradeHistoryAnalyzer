@@ -10,7 +10,7 @@ import type {
   WarningListResponse
 } from '$lib/types';
 
-const API_BASE = (env.PUBLIC_API_BASE_URL || 'http://localhost:8000/api').replace(/\/$/, '');
+const API_BASE = (env.PUBLIC_API_BASE_URL || '/api').replace(/\/$/, '');
 
 type FetchLike = typeof fetch;
 
