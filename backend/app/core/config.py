@@ -69,7 +69,17 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def database_dsn(self) -> str | None:
-        return self.database_url or self.neon_database_url
+        dsn = self.database_url or self.neon_database_url
+        if dsn is None:
+            return None
+
+        # SQLAlchemy defaults plain postgresql:// URLs to the psycopg2 driver.
+        # This app ships psycopg v3, so normalize legacy PostgreSQL URLs.
+        if dsn.startswith("postgresql://"):
+            return dsn.replace("postgresql://", "postgresql+psycopg://", 1)
+        if dsn.startswith("postgres://"):
+            return dsn.replace("postgres://", "postgresql+psycopg://", 1)
+        return dsn
 
     @computed_field
     @property
