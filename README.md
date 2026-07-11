@@ -40,45 +40,40 @@ frontend/    SvelteKit app, Tailwind UI, upload/review/report workflow
 backend/     FastAPI app, parsers, services, AI router, market-data router, Alembic
 ```
 
-## Local development
+## Run From Repo Root
 
-### Backend
+Use these PowerShell helpers from the repo root:
 
-1. Create a virtual environment and install dependencies from `backend/pyproject.toml`.
-2. Ensure `.env` contains your backend keys.
-3. Run migrations:
-
-```bash
-cd backend
-alembic upgrade head
+```powershell
+.\scripts\Start-Backend.ps1
+.\scripts\Start-Frontend.ps1
+.\scripts\Test-Backend.ps1
+.\scripts\Check-Frontend.ps1
+.\scripts\Migrate-Database.ps1
+.\scripts\Get-IntegrationStatus.ps1
 ```
 
-4. Start the API:
+Defaults:
+- `Start-Backend.ps1` uses `backend\.venv\Scripts\python.exe` if it exists, otherwise it falls back to `python` on `PATH`.
+- `Start-Frontend.ps1` sets `PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api` unless you already exported a value.
+- `Migrate-Database.ps1` runs `alembic upgrade head` by default. Pass `-Command current`, `-Command history`, or `-Command downgrade` to change behavior.
+- `Get-IntegrationStatus.ps1` prints the safe `/api/integrations/status` payload from a running backend.
 
-```bash
-cd backend
-uvicorn app.main:app --reload
-```
+### One-Time Setup
 
-### Frontend
+- Backend: create a virtual environment in `backend/.venv` and install dependencies from `backend/pyproject.toml`.
+- Frontend: run `npm install` once inside `frontend/`.
 
-1. Install dependencies:
+### What The Scripts Map To
 
-```bash
-cd frontend
-npm install
-```
+- Backend dev server: `uvicorn app.main:app --reload`
+- Frontend dev server: `npm run dev`
+- Backend tests: `pytest tests`
+- Frontend checks: `npm run check`
+- Database migrations: `alembic upgrade head`
+- Integration status: `GET /api/integrations/status`
 
-2. Start the Svelte app:
-
-```bash
-cd frontend
-npm run dev
-```
-
-The frontend expects `PUBLIC_API_BASE_URL` to point at the FastAPI backend, typically `http://localhost:8000/api`.
-
-## Database migrations
+## Database Migrations
 
 - Alembic config lives in `backend/alembic.ini`.
 - Migration environment lives in `backend/alembic/env.py`.
@@ -97,11 +92,10 @@ Backend tests live under `backend/tests/` and cover:
 - rule-based report generation without AI
 - AI-output schema validation
 
-Run them with:
+Run them from the repo root with:
 
-```bash
-cd backend
-pytest
+```powershell
+.\scripts\Test-Backend.ps1
 ```
 
 ## Production deployment notes
@@ -110,4 +104,3 @@ pytest
 - Backend target: separate FastAPI deployment with access to Neon Postgres.
 - File storage uses the local filesystem in development and can switch to Cloudflare R2 when the `R2_*` variables are present.
 - Secret keys stay server-side. The frontend only consumes safe integration status flags from `GET /api/integrations/status`.
-
